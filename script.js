@@ -49,4 +49,31 @@ d3.csv(dataUrl).then(data => {
         .call(d3.axisBottom(xScale).tickFormat(d3.format(".2s")))
         .selectAll("text")
         .attr("transform", "rotate(-10)")
-        .style("text-anchor
+        .style("text-anchor", "end");
+
+    // Add Y-axis (Fixed rotation issue)
+    svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(yScale))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-0.8em")
+        .attr("dy", "0.15em")
+        .attr("transform", "rotate(0)"); // Set to 0 for proper alignment
+
+    // Add labels
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height - 50)
+        .attr("class", "axis-label")
+        .style("text-anchor", "middle")
+        .text("Population");
+
+    svg.append("text")
+        .attr("x", -height / 2)
+        .attr("y", 20)
+        .attr("transform", "rotate(-90)")
+        .attr("class", "axis-label")
+        .style("text-anchor", "middle")
+        .text("Countries");
+});
