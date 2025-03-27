@@ -1,18 +1,27 @@
 const dataUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/main/Activity6_Population.csv";
 
 d3.csv(dataUrl).then(data => {
-    console.log("Raw Data:", data); // Debug: Check how data loads
+    console.log("Raw Data Loaded:", data); // Debugging
 
     data.forEach(d => {
-        d.Population = +d.Population.trim().replace(/,/g, ""); // Convert to number
+        // Ensure Population column exists and properly formatted
+        if (d.Population) {
+            d.Population = +d.Population.trim().replace(/,/g, ""); // Convert to number
+        } else {
+            d.Population = 0; // Default missing values to zero
+        }
     });
 
-    // Debug: Check for NaN values
-    const invalidData = data.filter(d => isNaN(d.Population));
-    console.log("Invalid Data Rows:", invalidData);
+    console.log("Processed Data:", data);
 
-    // Sort data in descending order and take the top 20
-    data = data.sort((a, b) => b.Population - a.Population).slice(0, 20);
+    // Check for NaN values
+    const invalidData = data.filter(d => isNaN(d.Population));
+    console.log("Invalid Data Rows:", invalidData); // Should be empty
+
+    // Ensure Population is correctly sorted
+    data = data.filter(d => !isNaN(d.Population)) // Remove NaN rows
+               .sort((a, b) => b.Population - a.Population)
+               .slice(0, 20);
 
     // Define chart dimensions
     const width = 1000, height = 700;
@@ -22,7 +31,8 @@ d3.csv(dataUrl).then(data => {
         .attr("width", width)
         .attr("height", height);
 
-    const maxPopulation = d3.max(data, d => d.Population) || 0; // Prevent NaN issues
+    // Prevent NaN from breaking scales
+    const maxPopulation = d3.max(data, d => d.Population) || 1; // Default to 1
     const xScale = d3.scaleLinear()
         .domain([0, maxPopulation])
         .range([margin.left, width - margin.right]);
@@ -32,6 +42,7 @@ d3.csv(dataUrl).then(data => {
         .range([margin.top, height - margin.bottom])
         .padding(0.3);
 
+    // Append bars, ensuring NaN width is avoided
     svg.selectAll(".bar")
         .data(data)
         .enter()
@@ -39,14 +50,16 @@ d3.csv(dataUrl).then(data => {
         .attr("class", "bar")
         .attr("x", margin.left)
         .attr("y", d => yScale(d.Country))
-        .attr("width", d => isNaN(d.Population) ? 0 : xScale(d.Population) - xScale(0)) // Handle NaN
+        .attr("width", d => isNaN(d.Population) ? 0 : xScale(d.Population) - margin.left) // Handle NaN
         .attr("height", yScale.bandwidth())
         .attr("fill", "steelblue");
 
+    // Append x-axis
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(d3.axisBottom(xScale).tickFormat(d3.format(".2s")));
 
+    // Append y-axis
     svg.append("g")
         .attr("transform", `translate(${margin.left},0)`)
         .call(d3.axisLeft(yScale));
