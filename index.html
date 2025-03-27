@@ -4,14 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Population Bar Chart</title>
-    <link rel="stylesheet" href="styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .bar {
+            fill: steelblue;
+        }
+        .bar:hover {
+            fill: orange;
+        }
+        .axis-label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Population Bar Chart (2020)</h1>
-    <div id="chart-container">
-        <svg id="chart"></svg>
-    </div>
-    <script src="script.js"></script>
+    <h2 style="text-align: center;">Population Bar Chart (2020)</h2>
+    <svg id="chart"></svg>
+
+    <script>
+        const dataUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/main/Activity6_Population.csv";
+
+        d3.csv(dataUrl).then(data => {
+            console.log("Raw Data:", data); // Debugging step
+
+            // Convert Population to a number and clean commas
+            data.forEach(d => {
+                d.Population = +d.Population.trim().replace(/,/g, ""); 
+            });
+
+            // Debugging: Check for invalid data
+            const invalidData = data.filter(d => isNaN(d.Population));
+            console.log("Invalid Data Rows:", invalidData);
+
+            // Sort data in descending order and take top 20
+            data = data.sort((a, b) => b.Population - a.Population).slice(0, 20);
+
+            // Chart dimensions
+            const width = 1000, height = 700;
+            const margin = { top: 50, right: 30, bottom: 100, left: 250 };
+
+            const svg = d3.select("#chart")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Define scales
+            const maxPopulation = d3.max(data, d => d.Population) || 0; // Avoid NaN issues
+
+            const xScale = d3.scaleLinear()
+                .domain([0, maxPopulation])
+                .range([margin.left, width - margin.right]);
+
+            const yScale = d3.scaleBand()
+                .domain(data.map(d => d.Country))
+                .range([margin.top, height - margin.bottom])
+                .padding(0.3);
+
+            // Draw bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", xScale(0)) // Start from 0
+                .attr("y", d => yScale(d.Country))
+                .attr("width", d => xScale(d.Population) - xScale(0)) // Ensure positive width
+                .attr("height", yScale.bandwidth())
+                .attr("fill", "steelblue");
+
+            // Add X-Axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height - margin.bottom})`)
+                .call(d3.axisBottom(xScale).tickFormat(d3.format(".2s")))
+                .selectAll("text")
+                .style("font-size", "12px");
+
+            // Add Y-Axis
+            svg.append("g")
+                .attr("transform", `translate(${margin.left},0)`)
+                .call(d3.axisLeft(yScale))
+                .selectAll("text")
+                .style("font-size", "12px");
+
+            // Add Labels
+            svg.append("text")
+                .attr("class", "axis-label")
+                .attr("x", width / 2)
+                .attr("y", height - 50)
+                .attr("text-anchor", "middle")
+                .text("Population");
+
+            svg.append("text")
+                .attr("class", "axis-label")
+                .attr("x", -height / 2)
+                .attr("y", 20)
+                .attr("transform", "rotate(-90)")
+                .attr("text-anchor", "middle")
+                .text("Country");
+
+        }).catch(error => {
+            console.error("Error loading data:", error);
+        });
+    </script>
 </body>
 </html>
