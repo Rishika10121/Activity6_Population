@@ -1,5 +1,5 @@
 // Use GitHub raw CSV link instead of a local file
-const dataUrl = "https://raw.githubusercontent.com/your-username/repository/main/data.csv";
+const dataUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/refs/heads/main/Activity6_Population.csv";
 
 d3.csv(dataUrl).then(data => {
     // Convert population to numbers
