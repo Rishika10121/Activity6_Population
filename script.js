@@ -1,29 +1,30 @@
-// Use GitHub raw CSV link instead of a local file
 const dataUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/main/Activity6_Population.csv";
 
 d3.csv(dataUrl).then(data => {
-    // Convert population to numbers
-    data.forEach(d => d.Population = +d.Population);
+    console.log("Raw Data:", data); // Debug: Check how data loads
 
-    // Check if data is loaded correctly
-    console.log("Loaded Data:", data);
+    data.forEach(d => {
+        d.Population = +d.Population.trim().replace(/,/g, ""); // Convert to number
+    });
 
-    // Sort data in descending order and limit to top 20
+    // Debug: Check for NaN values
+    const invalidData = data.filter(d => isNaN(d.Population));
+    console.log("Invalid Data Rows:", invalidData);
+
+    // Sort data in descending order and take the top 20
     data = data.sort((a, b) => b.Population - a.Population).slice(0, 20);
 
     // Define chart dimensions
-    const width = 1000;
-    const height = 700;
-    const margin = { top: 40, right: 30, bottom: 100, left: 200 };  // Increased left margin for labels
+    const width = 1000, height = 700;
+    const margin = { top: 40, right: 30, bottom: 100, left: 200 };
 
-    // Create SVG container
     const svg = d3.select("#chart")
         .attr("width", width)
         .attr("height", height);
 
-    // Define scales
+    const maxPopulation = d3.max(data, d => d.Population) || 0; // Prevent NaN issues
     const xScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.Population)])
+        .domain([0, maxPopulation])
         .range([margin.left, width - margin.right]);
 
     const yScale = d3.scaleBand()
@@ -31,7 +32,6 @@ d3.csv(dataUrl).then(data => {
         .range([margin.top, height - margin.bottom])
         .padding(0.3);
 
-    // Create bars
     svg.selectAll(".bar")
         .data(data)
         .enter()
@@ -39,41 +39,15 @@ d3.csv(dataUrl).then(data => {
         .attr("class", "bar")
         .attr("x", margin.left)
         .attr("y", d => yScale(d.Country))
-        .attr("width", d => xScale(d.Population) - xScale(0)) // Fixed bar width calculation
+        .attr("width", d => isNaN(d.Population) ? 0 : xScale(d.Population) - xScale(0)) // Handle NaN
         .attr("height", yScale.bandwidth())
         .attr("fill", "steelblue");
 
-    // Add X-axis
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(xScale).tickFormat(d3.format(".2s")))
-        .selectAll("text")
-        .attr("transform", "rotate(-10)")
-        .style("text-anchor", "end");
+        .call(d3.axisBottom(xScale).tickFormat(d3.format(".2s")));
 
-    // Add Y-axis (Fixed rotation issue)
     svg.append("g")
         .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(yScale))
-        .selectAll("text")
-        .style("text-anchor", "end")
-        .attr("dx", "-0.8em")
-        .attr("dy", "0.15em")
-        .attr("transform", "rotate(0)"); // Set to 0 for proper alignment
-
-    // Add labels
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height - 50)
-        .attr("class", "axis-label")
-        .style("text-anchor", "middle")
-        .text("Population");
-
-    svg.append("text")
-        .attr("x", -height / 2)
-        .attr("y", 20)
-        .attr("transform", "rotate(-90)")
-        .attr("class", "axis-label")
-        .style("text-anchor", "middle")
-        .text("Countries");
+        .call(d3.axisLeft(yScale));
 });
