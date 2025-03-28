@@ -1,3 +1,5 @@
+let populationChart; // Define globally
+
 function loadData() {
     const csvUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/refs/heads/main/Activity6_Population.csv";
 
@@ -31,7 +33,7 @@ function loadData() {
             }
 
             // Draw table
-            displayTable(headers, rows);
+            displayTable(headers, rows.slice(1, 21)); // Only first 20 countries
 
             // Draw bar chart
             drawBarChart(labels, populations);
@@ -39,12 +41,45 @@ function loadData() {
         .catch(error => console.error("Error loading data:", error));
 }
 
+function displayTable(headers, rows) {
+    const table = document.getElementById("dataTable");
+    table.innerHTML = ""; // Clear previous table data
+
+    // Create table header
+    let thead = document.createElement("thead");
+    let headerRow = document.createElement("tr");
+    ["Country", "Population in 2010"].forEach(text => {
+        let th = document.createElement("th");
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Create table body
+    let tbody = document.createElement("tbody");
+
+    rows.forEach(row => {
+        let tr = document.createElement("tr");
+        let countryCell = document.createElement("td");
+        let populationCell = document.createElement("td");
+
+        countryCell.textContent = row[0]; // Country name
+        populationCell.textContent = row[1]; // Population in 2010
+
+        tr.appendChild(countryCell);
+        tr.appendChild(populationCell);
+        tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+}
 
 function drawBarChart(labels, data) {
     const ctx = document.getElementById("populationChart").getContext("2d");
 
-    // Ensure populationChart is a Chart instance before destroying
-    if (populationChart instanceof Chart) {
+    // Check if populationChart exists before destroying
+    if (typeof populationChart !== "undefined" && populationChart instanceof Chart) {
         populationChart.destroy();
     }
 
