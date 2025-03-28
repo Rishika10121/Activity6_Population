@@ -11,9 +11,10 @@ function loadData() {
             console.log("CSV Headers:", headers);
 
             // Find index for "2010" column
-            const yearIndex = headers.indexOf("2010");
+            const year = "2010";
+            const yearIndex = headers.indexOf(year);
             if (yearIndex === -1) {
-                console.error("Year 2010 not found in dataset.");
+                console.error(`Year ${year} not found in dataset.`);
                 return;
             }
 
@@ -35,8 +36,8 @@ function loadData() {
             // Draw table
             displayTable(headers, rows.slice(1, 21)); // Only first 20 countries
 
-            // Draw bar chart
-            drawBarChart(labels, populations);
+            // Draw bar chart with updated axis labels
+            drawBarChart(labels, populations, year);
         })
         .catch(error => console.error("Error loading data:", error));
 }
@@ -75,7 +76,7 @@ function displayTable(headers, rows) {
     table.appendChild(tbody);
 }
 
-function drawBarChart(labels, data) {
+function drawBarChart(labels, data, year) {
     const ctx = document.getElementById("populationChart").getContext("2d");
 
     // Check if populationChart exists before destroying
@@ -88,7 +89,7 @@ function drawBarChart(labels, data) {
         data: {
             labels: labels,
             datasets: [{
-                label: "Population in 2010",
+                label: `Population in ${year}`,
                 data: data,
                 backgroundColor: "rgba(75, 192, 192, 0.6)",
                 borderColor: "rgba(75, 192, 192, 1)",
@@ -103,7 +104,7 @@ function drawBarChart(labels, data) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: "Population in 2010"
+                        text: `POPULATION – ${year}` // Updated label
                     }
                 },
                 y: {
