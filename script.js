@@ -30,14 +30,15 @@ function loadData() {
                 if (labels.length >= 10) break; // Limit to 10 countries
             }
 
-            // Draw table
-            displayTable(headers, rows);
+            // Remove this line to fix the error
+            // displayTable(headers, rows);  
 
             // Draw bar chart
             drawBarChart(labels, populations);
         })
         .catch(error => console.error("Error loading data:", error));
 }
+
 
 function drawBarChart(labels, data) {
     const ctx = document.getElementById("populationChart").getContext("2d");
