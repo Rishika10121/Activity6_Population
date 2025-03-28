@@ -1,4 +1,4 @@
-let populationChart; // Store the chart instance
+let populationChart; // Store chart instance
 
 function loadData() {
     const csvUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/refs/heads/main/Activity6_Population.csv";
@@ -6,47 +6,62 @@ function loadData() {
     fetch(csvUrl)
         .then(response => response.text())
         .then(data => {
-            const rows = data.split("\n");
-            const headers = rows[0].split(",");
+            const rows = data.split("\n").map(row => row.split(",")); // Convert CSV to array
+            const headers = rows[0]; // First row is header
 
-            const tableHeader = document.getElementById("tableHeader");
-            const tableBody = document.getElementById("tableBody");
+            // Find index for "2020" column
+            const yearIndex = headers.indexOf("2020");
+            if (yearIndex === -1) {
+                console.error("Year 2020 not found in dataset.");
+                return;
+            }
 
-            tableHeader.innerHTML = "";
-            tableBody.innerHTML = "";
+            // Get country index
+            const countryIndex = headers.indexOf("Country");
 
-            // Extract headers
-            headers.forEach(header => {
-                const th = document.createElement("th");
-                th.textContent = header;
-                tableHeader.appendChild(th);
-            });
-
-            let labels = []; // Country names
-            let populations = []; // Population values
-            let count = 0; // Limit to 30 countries
+            // Prepare data for visualization
+            let labels = [];
+            let populations = [];
 
             for (let i = 1; i < rows.length; i++) {
-                const rowData = rows[i].split(",");
-                if (rowData.length > 1 && rowData[2] === "2020" && count < 30) { // Ensure it's for year 2020
-                    const tr = document.createElement("tr");
-                    rowData.forEach(cell => {
-                        const td = document.createElement("td");
-                        td.textContent = cell;
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-
-                    labels.push(rowData[0]); // Country
-                    populations.push(parseInt(rowData[1])); // Population
-                    count++;
+                if (rows[i].length > yearIndex) {
+                    labels.push(rows[i][countryIndex]); // Country name
+                    populations.push(parseInt(rows[i][yearIndex])); // Population in 2020
                 }
+                if (labels.length >= 30) break; // Limit to 30 countries
             }
+
+            // Draw table
+            displayTable(headers, rows);
 
             // Draw bar chart
             drawBarChart(labels, populations);
         })
         .catch(error => console.error("Error loading data:", error));
+}
+
+function displayTable(headers, rows) {
+    const tableHeader = document.getElementById("tableHeader");
+    const tableBody = document.getElementById("tableBody");
+
+    tableHeader.innerHTML = "";
+    tableBody.innerHTML = "";
+
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        tableHeader.appendChild(th);
+    });
+
+    for (let i = 1; i < Math.min(rows.length, 31); i++) {
+        const tr = document.createElement("tr");
+        rows[i].forEach(cell => {
+            const td = document.createElement("td");
+            td.textContent = cell;
+            tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+    }
 }
 
 function drawBarChart(labels, data) {
