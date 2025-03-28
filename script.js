@@ -8,10 +8,10 @@ function loadData() {
             const headers = rows[0].map(h => h.trim()); // Remove spaces
             console.log("CSV Headers:", headers);
 
-            // Find index for "2000" column
-            const yearIndex = headers.indexOf("2000");
+            // Find index for "2010" column
+            const yearIndex = headers.indexOf("2010");
             if (yearIndex === -1) {
-                console.error("Year 2000 not found in dataset.");
+                console.error("Year 2010 not found in dataset.");
                 return;
             }
 
@@ -25,13 +25,13 @@ function loadData() {
             for (let i = 1; i < rows.length; i++) {
                 if (rows[i].length > yearIndex) {
                     labels.push(rows[i][countryIndex]); // Country name
-                    populations.push(parseInt(rows[i][yearIndex])); // Population in 2000
+                    populations.push(parseInt(rows[i][yearIndex])); // Population in 2010
                 }
-                if (labels.length >= 10) break; // Limit to 10 countries
+                if (labels.length >= 20) break; // Limit to 20 countries
             }
 
-            // Remove this line to fix the error
-            // displayTable(headers, rows);  
+            // Draw table
+            displayTable(headers, rows);
 
             // Draw bar chart
             drawBarChart(labels, populations);
@@ -53,7 +53,7 @@ function drawBarChart(labels, data) {
         data: {
             labels: labels,
             datasets: [{
-                label: "Population in 2000",
+                label: "Population in 2010",
                 data: data,
                 backgroundColor: "rgba(75, 192, 192, 0.6)",
                 borderColor: "rgba(75, 192, 192, 1)",
@@ -68,7 +68,7 @@ function drawBarChart(labels, data) {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: "Population in 2000"
+                        text: "Population in 2010"
                     }
                 },
                 y: {
