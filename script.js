@@ -87,9 +87,20 @@ function drawBarChart(labels, data) {
         },
         options: {
             responsive: true,
+            indexAxis: 'y', // Make it a horizontal bar chart
             scales: {
+                x: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Population-2020"
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    title: {
+                        display: true,
+                        text: "Country"
+                    }
                 }
             }
         }
