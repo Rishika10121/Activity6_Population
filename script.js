@@ -22,13 +22,13 @@ function loadData() {
                 tableHeader.appendChild(th);
             });
 
-            // Prepare data for chart
             let labels = []; // Country names
             let populations = []; // Population values
+            let count = 0; // Limit to 30 countries
 
             for (let i = 1; i < rows.length; i++) {
                 const rowData = rows[i].split(",");
-                if (rowData.length > 1) {
+                if (rowData.length > 1 && rowData[2] === "2020" && count < 30) { // Ensure it's for year 2020
                     const tr = document.createElement("tr");
                     rowData.forEach(cell => {
                         const td = document.createElement("td");
@@ -37,9 +37,9 @@ function loadData() {
                     });
                     tableBody.appendChild(tr);
 
-                    // Assuming the first column is "Country" and second is "Population"
                     labels.push(rowData[0]); // Country
                     populations.push(parseInt(rowData[1])); // Population
+                    count++;
                 }
             }
 
@@ -52,7 +52,6 @@ function loadData() {
 function drawBarChart(labels, data) {
     const ctx = document.getElementById("populationChart").getContext("2d");
 
-    // Destroy existing chart if it exists (to prevent overlapping)
     if (populationChart) {
         populationChart.destroy();
     }
@@ -62,10 +61,10 @@ function drawBarChart(labels, data) {
         data: {
             labels: labels,
             datasets: [{
-                label: "Population",
+                label: "Population in 2020",
                 data: data,
-                backgroundColor: "rgba(54, 162, 235, 0.6)",
-                borderColor: "rgba(54, 162, 235, 1)",
+                backgroundColor: "rgba(75, 192, 192, 0.6)",
+                borderColor: "rgba(75, 192, 192, 1)",
                 borderWidth: 1
             }]
         },
