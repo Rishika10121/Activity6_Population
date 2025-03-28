@@ -43,7 +43,8 @@ function loadData() {
 function drawBarChart(labels, data) {
     const ctx = document.getElementById("populationChart").getContext("2d");
 
-    if (populationChart) {
+    // Ensure populationChart is a Chart instance before destroying
+    if (populationChart instanceof Chart) {
         populationChart.destroy();
     }
 
@@ -61,13 +62,13 @@ function drawBarChart(labels, data) {
         },
         options: {
             responsive: true,
-            indexAxis: 'y', // Horizontal bar chart
+            indexAxis: 'y', // Set Y-axis for country names
             scales: {
                 x: {
                     beginAtZero: true,
                     title: {
                         display: true,
-                        text: "Population-2000"
+                        text: "Population in 2000"
                     }
                 },
                 y: {
