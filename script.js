@@ -2,6 +2,7 @@ let populationChart; // Define globally
 
 function loadData() {
     const csvUrl = "https://raw.githubusercontent.com/Rishika10121/Activity6_Population/refs/heads/main/Activity6_Population.csv";
+    const year = "2000"; // Change this to fetch data for another year
 
     fetch(csvUrl)
         .then(response => response.text())
@@ -10,8 +11,7 @@ function loadData() {
             const headers = rows[0].map(h => h.trim()); // Remove spaces
             console.log("CSV Headers:", headers);
 
-            // Find index for "2010" column
-            const year = "2010";
+            // Find index for selected year column
             const yearIndex = headers.indexOf(year);
             if (yearIndex === -1) {
                 console.error(`Year ${year} not found in dataset.`);
@@ -28,13 +28,13 @@ function loadData() {
             for (let i = 1; i < rows.length; i++) {
                 if (rows[i].length > yearIndex) {
                     labels.push(rows[i][countryIndex]); // Country name
-                    populations.push(parseInt(rows[i][yearIndex])); // Population in 2010
+                    populations.push(parseInt(rows[i][yearIndex])); // Population for selected year
                 }
-                if (labels.length >= 20) break; // Limit to 20 countries
+                if (labels.length >= 10) break; // Limit to 10 countries
             }
 
             // Draw table
-            displayTable(headers, rows.slice(1, 21)); // Only first 20 countries
+            displayTable(headers, rows.slice(1, 11)); // Only first 10 countries
 
             // Draw bar chart with updated axis labels
             drawBarChart(labels, populations, year);
@@ -49,7 +49,7 @@ function displayTable(headers, rows) {
     // Create table header
     let thead = document.createElement("thead");
     let headerRow = document.createElement("tr");
-    ["Country", "Population in 2010"].forEach(text => {
+    ["Country", `Population in 2000`].forEach(text => {
         let th = document.createElement("th");
         th.textContent = text;
         headerRow.appendChild(th);
@@ -66,7 +66,7 @@ function displayTable(headers, rows) {
         let populationCell = document.createElement("td");
 
         countryCell.textContent = row[0]; // Country name
-        populationCell.textContent = row[1]; // Population in 2010
+        populationCell.textContent = row[1]; // Population in 2000
 
         tr.appendChild(countryCell);
         tr.appendChild(populationCell);
