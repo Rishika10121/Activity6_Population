@@ -7,7 +7,9 @@ function loadData() {
         .then(response => response.text())
         .then(data => {
             const rows = data.split("\n").map(row => row.split(",")); // Convert CSV to array
-            const headers = rows[0]; // First row is header
+            const headers = rows[0].map(h => h.trim()); // Remove spaces
+            console.log("CSV Headers:", headers);
+
 
             // Find index for "2020" column
             const yearIndex = headers.indexOf("2020");
