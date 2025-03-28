@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Population Data</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Population Data</h1>
     <button onclick="loadData()">Load Data</button>
+    
     <table id="dataTable">
         <thead>
             <tr id="tableHeader"></tr>
         </thead>
         <tbody id="tableBody"></tbody>
     </table>
+
+    <h2>Population Bar Chart</h2>
+    <canvas id="populationChart"></canvas>
+
     <script src="script.js"></script>
 </body>
 </html>
